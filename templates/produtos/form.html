@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - Sistema PDV</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar { background-color: #0d6efd !important; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+        .card-header { background-color: #0d6efd; color: white; border-radius: 12px 12px 0 0 !important; }
+        .btn-primary { background-color: #0d6efd; border-color: #0d6efd; }
+        .btn-primary:hover { background-color: #0b5ed7; border-color: #0a58ca; }
+        .form-control, .form-select { border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shop"></i> Sistema PDV
+            </a>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/vendas/pdv/">PDV</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/produtos/">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes/">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-box"></i> {{ titulo }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>Erro:</strong> Corrija os campos abaixo.
+                                    <ul class="mb-0">
+                                        {% for field, errors in form.errors.items %}
+                                            {% for error in errors %}
+                                                <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <!-- Informações Básicas -->
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3"><i class="bi bi-info-circle"></i> Informações Básicas</h6>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ form.codigo.label }} *</label>
+                                    {{ form.codigo }}
+                                    {% if form.codigo.help_text %}
+                                        <div class="form-text">{{ form.codigo.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ form.categoria.label }} *</label>
+                                    {{ form.categoria }}
+                                    <div class="form-text">
+                                        <a href="{% url 'produtos:categorias' %}" target="_blank">
+                                            <i class="bi bi-plus-circle"></i> Gerenciar categorias
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">{{ form.nome.label }} *</label>
+                                    {{ form.nome }}
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">{{ form.descricao.label }}</label>
+                                    {{ form.descricao }}
+                                </div>
+                                
+                                <!-- Imagem -->
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 mt-4"><i class="bi bi-image"></i> Imagem do Produto</h6>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">{{ form.imagem.label }}</label>
+                                    {{ form.imagem }}
+                                    <div class="form-text">Formatos aceitos: JPG, PNG, WEBP (Máximo: 2MB)</div>
+                                    
+                                    {% if produto and produto.imagem %}
+                                        <div class="mt-2">
+                                            <small class="text-muted">Imagem atual:</small><br>
+                                            <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" 
+                                                 class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Preços -->
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 mt-4"><i class="bi bi-currency-dollar"></i> Preços</h6>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ form.preco_custo.label }}</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        {{ form.preco_custo }}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ form.preco_venda.label }} *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        {{ form.preco_venda }}
+                                    </div>
+                                    <div id="margem-info" class="form-text text-success"></div>
+                                </div>
+                                
+                                <!-- Estoque -->
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 mt-4"><i class="bi bi-boxes"></i> Controle de Estoque</h6>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">{{ form.estoque_atual.label }}</label>
+                                    {{ form.estoque_atual }}
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">{{ form.estoque_minimo.label }}</label>
+                                    {{ form.estoque_minimo }}
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">{{ form.unidade_medida.label }}</label>
+                                    {{ form.unidade_medida }}
+                                </div>
+                                
+                                <!-- Outros -->
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 mt-4"><i class="bi bi-gear"></i> Informações Adicionais</h6>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">{{ form.codigo_barras.label }}</label>
+                                    {{ form.codigo_barras }}
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check mt-4">
+                                        {{ form.ativo }}
+                                        <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
+                                            {{ form.ativo.label }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="my-4">
+                            
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> {{ action }}
+                                </button>
+                                <a href="{{ voltar_url }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                                {% if produto %}
+                                    <a href="{% url 'produtos:deletar' produto.pk %}" class="btn btn-outline-danger ms-auto">
+                                        <i class="bi bi-trash"></i> Remover
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Calcular margem automaticamente
+        const precoCusto = document.getElementById('id_preco_custo');
+        const precoVenda = document.getElementById('id_preco_venda');
+        const margemInfo = document.getElementById('margem-info');
+        
+        function calcularMargem() {
+            const custo = parseFloat(precoCusto.value) || 0;
+            const venda = parseFloat(precoVenda.value) || 0;
+            
+            if (custo > 0 && venda > 0) {
+                const margem = ((venda - custo) / custo * 100).toFixed(1);
+                const lucro = (venda - custo).toFixed(2);
+                margemInfo.innerHTML = `<i class="bi bi-calculator"></i> Margem: ${margem}% | Lucro: R$ ${lucro}`;
+            } else {
+                margemInfo.innerHTML = '';
+            }
+        }
+        
+        if (precoCusto && precoVenda) {
+            precoCusto.addEventListener('input', calcularMargem);
+            precoVenda.addEventListener('input', calcularMargem);
+            calcularMargem(); // Calcular ao carregar
+        }
+    </script>
+</body>
+</html>

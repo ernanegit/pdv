@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ produto.nome }} - Sistema PDV</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: #0d6efd !important;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .card-header {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            border: none;
+        }
+        
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+        
+        .badge.bg-info {
+            background-color: #0d6efd !important;
+        }
+        
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+        
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        
+        .text-success {
+            color: #198754 !important;
+        }
+        
+        .text-warning {
+            color: #ffc107 !important;
+        }
+        
+        .text-info {
+            color: #0d6efd !important;
+        }
+        
+        .text-primary {
+            color: #0d6efd !important;
+        }
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        
+        .btn-success:hover {
+            background-color: #157347;
+            border-color: #146c43;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #664d03;
+        }
+        
+        .product-image-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shop"></i> Sistema PDV
+            </a>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/vendas/pdv/">PDV</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/produtos/">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="/clientes/">Clientes</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-box"></i> {{ produto.nome }}</h2>
+            <div class="btn-group">
+                <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="/produtos/" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Informações do Produto -->
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-info-circle"></i> Informações do Produto</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <!-- Imagem do produto -->
+                                <div class="product-image-container">
+                                    {% if produto.imagem %}
+                                        <img src="{{ produto.imagem.url }}" 
+                                             alt="{{ produto.nome }}"
+                                             class="img-fluid w-100"
+                                             style="max-height: 300px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="d-flex align-items-center justify-content-center" 
+                                             style="height: 200px;">
+                                            <i class="bi bi-box text-muted" style="font-size: 4rem;"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <strong>Código:</strong>
+                                    <span class="badge bg-secondary ms-2">{{ produto.codigo }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Nome:</strong>
+                                    <p class="mb-1">{{ produto.nome }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Categoria:</strong>
+                                    <span class="badge bg-info ms-2">{{ produto.categoria.nome }}</span>
+                                </div>
+                                {% if produto.descricao %}
+                                <div class="mb-3">
+                                    <strong>Descrição:</strong>
+                                    <p>{{ produto.descricao }}</p>
+                                </div>
+                                {% endif %}
+                                {% if produto.codigo_barras %}
+                                <div class="mb-3">
+                                    <strong>Código de Barras:</strong>
+                                    <p>{{ produto.codigo_barras }}</p>
+                                </div>
+                                {% endif %}
+                                <div class="mb-3">
+                                    <strong>Unidade de Medida:</strong>
+                                    <span class="badge bg-light text-dark ms-2">{{ produto.unidade_medida }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Status:</strong>
+                                    {% if produto.ativo %}
+                                        <span class="badge bg-success ms-2">Ativo</span>
+                                    {% else %}
+                                        <span class="badge bg-danger ms-2">Inativo</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações de Estoque -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-boxes"></i> Controle de Estoque</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-2">Estoque Atual</h6>
+                                    <h2 class="{% if produto.estoque_baixo %}text-warning{% else %}text-success{% endif %} mb-1">
+                                        {{ produto.estoque_atual }}
+                                    </h2>
+                                    <small class="text-muted">{{ produto.unidade_medida }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-2">Estoque Mínimo</h6>
+                                    <h2 class="text-info mb-1">{{ produto.estoque_minimo }}</h2>
+                                    <small class="text-muted">{{ produto.unidade_medida }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded">
+                                    <h6 class="text-muted mb-2">Status</h6>
+                                    {% if produto.estoque_baixo %}
+                                        <h4><span class="badge bg-warning">Estoque Baixo</span></h4>
+                                        <small class="text-warning">Reabastecer produto</small>
+                                    {% else %}
+                                        <h4><span class="badge bg-success">OK</span></h4>
+                                        <small class="text-success">Estoque adequado</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if produto.estoque_baixo %}
+                        <div class="alert alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Atenção!</strong> O estoque deste produto está abaixo do mínimo recomendado.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar com Informações -->
+            <div class="col-md-4">
+                <!-- Resumo Financeiro -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6><i class="bi bi-calculator"></i> Informações Financeiras</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Preço de Custo:</span>
+                            <strong>R$ {{ produto.preco_custo }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Preço de Venda:</span>
+                            <strong class="text-success">R$ {{ produto.preco_venda }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Lucro Unitário:</span>
+                            <strong class="text-primary">R$ {{ produto.preco_venda|floatformat:2 }}</strong>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span>Margem de Lucro:</span>
+                            <strong class="text-info">{{ produto.margem_lucro|floatformat:1 }}%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6><i class="bi bi-lightning"></i> Ações Rápidas</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/vendas/pdv/" class="btn btn-success">
+                                <i class="bi bi-cash-coin"></i> Vender Produto
+                            </a>
+                            <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-primary">
+                                <i class="bi bi-pencil"></i> Editar Produto
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="window.print()">
+                                <i class="bi bi-printer"></i> Imprimir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações do Sistema -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6><i class="bi bi-info"></i> Informações do Sistema</h6>
+                    </div>
+                    <div class="card-body">
+                        <small class="text-muted">
+                            <strong>ID:</strong> {{ produto.id }}<br>
+                            <strong>Criado em:</strong><br>
+                            {{ produto.criado_em|date:"d/m/Y H:i" }}<br><br>
+                            <strong>Última atualização:</strong><br>
+                            {{ produto.atualizado_em|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

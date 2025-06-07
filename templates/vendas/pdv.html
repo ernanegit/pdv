@@ -7,19 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .pdv-container { height: calc(100vh - 150px); }
-        .produtos-grid { max-height: 60vh; overflow-y: auto; }
-        .carrinho-area { max-height: 70vh; overflow-y: auto; }
-        .produto-card { cursor: pointer; transition: all 0.2s; min-height: 120px; }
-        .produto-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .carrinho-item { border-bottom: 1px solid #dee2e6; padding: 0.75rem 0; }
-        .total-venda { font-size: 1.5rem; font-weight: bold; color: #28a745; }
+        .produto-card { 
+            cursor: pointer; 
+            transition: all 0.2s; 
+        }
+        .produto-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="/vendas/pdv/">
+            <a class="navbar-brand fw-bold" href="/">
                 <i class="bi bi-shop"></i> Sistema PDV
             </a>
             <ul class="navbar-nav">
@@ -40,51 +41,59 @@
     </nav>
 
     <div class="container-fluid py-4">
-        <div class="row pdv-container">
+        <div class="row">
             <!-- Area de Produtos -->
             <div class="col-md-8">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5><i class="bi bi-grid"></i> Produtos</h5>
-                        <div class="d-flex gap-2">
-                            <input type="text" id="busca-produto" class="form-control" 
-                                   placeholder="Buscar produto (F2)..." style="width: 300px;">
-                            <button class="btn btn-outline-primary" onclick="recarregarProdutos()">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-grid"></i> Produtos Disponíveis</h5>
                     </div>
-                    <div class="card-body">
-                        <div class="produtos-grid" id="produtos-grid">
+                    <div class="card-body" style="max-height: 70vh; overflow-y: auto;">
+                        <div class="row">
                             {% for produto in produtos %}
-                            <div class="produto-card card mb-2" onclick="adicionarProduto({{ produto.id }}, '{{ produto.nome|escapejs }}', {{ produto.preco_venda }}, {{ produto.estoque_atual }})">
-                                <div class="card-body p-2">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 60px;">
-                                                <i class="bi bi-box text-muted"></i>
+                            <div class="col-md-6 mb-3">
+                                <div class="produto-card card h-100">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                {% if produto.imagem %}
+                                                    <img src="{{ produto.imagem.url }}" 
+                                                         alt="{{ produto.nome }}" 
+                                                         class="img-fluid rounded"
+                                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                                         style="height: 60px; width: 60px;">
+                                                        <i class="bi bi-box text-muted" style="font-size: 1.5rem;"></i>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                        </div>
-                                        <div class="col-9">
-                                            <h6 class="card-title mb-1">{{ produto.nome }}</h6>
-                                            <p class="card-text text-muted mb-1">
-                                                <small>{{ produto.codigo }}</small>
-                                            </p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <span class="text-success fw-bold">R$ {{ produto.preco_venda }}</span>
-                                                <small class="text-muted">Est: {{ produto.estoque_atual }}</small>
+                                            <div class="col-8">
+                                                <h6 class="card-title mb-1">{{ produto.nome }}</h6>
+                                                <p class="card-text">
+                                                    <small class="text-muted">{{ produto.codigo }}</small><br>
+                                                    <span class="text-success fw-bold">R$ {{ produto.preco_venda }}</span><br>
+                                                    <small class="text-muted">Estoque: {{ produto.estoque_atual }}</small>
+                                                </p>
+                                                <button class="btn btn-primary btn-sm w-100" 
+                                                        onclick="alert('Produto: {{ produto.nome }} - R$ {{ produto.preco_venda }}')">
+                                                    <i class="bi bi-plus"></i> Adicionar
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             {% empty %}
-                            <div class="text-center text-muted py-4">
-                                <i class="bi bi-box-seam display-4"></i>
-                                <p>Nenhum produto encontrado</p>
-                                <a href="/admin/produtos/produto/add/" class="btn btn-primary">
-                                    Cadastrar Produtos
-                                </a>
+                            <div class="col-12">
+                                <div class="text-center text-muted py-5">
+                                    <i class="bi bi-box-seam display-4"></i>
+                                    <h5 class="mt-3">Nenhum produto encontrado</h5>
+                                    <p>Cadastre produtos no Admin para começar a vender</p>
+                                    <a href="/admin/produtos/produto/add/" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Cadastrar Produtos
+                                    </a>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
@@ -94,19 +103,16 @@
 
             <!-- Area do Carrinho -->
             <div class="col-md-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5><i class="bi bi-cart3"></i> Carrinho</h5>
-                        <button class="btn btn-outline-danger btn-sm" onclick="limparCarrinho()">
-                            <i class="bi bi-trash"></i> Limpar
-                        </button>
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-cart3"></i> Carrinho de Compras</h5>
                     </div>
                     <div class="card-body">
                         <!-- Cliente -->
                         <div class="mb-3">
                             <label class="form-label">Cliente</label>
-                            <select class="form-select" id="cliente-select">
-                                <option value="">Cliente nao informado</option>
+                            <select class="form-select">
+                                <option value="">Cliente não informado</option>
                                 {% for cliente in clientes %}
                                 <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
                                 {% endfor %}
@@ -114,310 +120,66 @@
                         </div>
 
                         <!-- Itens do Carrinho -->
-                        <div class="carrinho-area mb-3" id="carrinho-itens">
+                        <div class="mb-3" style="min-height: 200px;">
                             <div class="text-center text-muted py-4">
                                 <i class="bi bi-cart-x display-4"></i>
                                 <p>Carrinho vazio</p>
+                                <small>Clique nos produtos para adicionar</small>
                             </div>
                         </div>
 
-                        <!-- Resumo da Venda -->
+                        <!-- Resumo -->
                         <div class="border-top pt-3">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span id="subtotal">R$ 0,00</span>
+                                <span>R$ 0,00</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Desconto:</span>
-                                <input type="number" class="form-control form-control-sm" id="desconto" 
-                                       value="0" step="0.01" style="width: 80px; text-align: right;">
+                                <input type="number" class="form-control form-control-sm" 
+                                       value="0" step="0.01" style="width: 80px;">
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong>Total:</strong>
-                                <strong class="total-venda" id="total">R$ 0,00</strong>
+                                <strong class="text-success fs-5">R$ 0,00</strong>
                             </div>
 
                             <!-- Forma de Pagamento -->
                             <div class="mb-3">
                                 <label class="form-label">Forma de Pagamento</label>
-                                <select class="form-select" id="forma-pagamento">
+                                <select class="form-select">
                                     <option value="D">Dinheiro</option>
-                                    <option value="C">Cartao de Credito</option>
-                                    <option value="B">Cartao de Debito</option>
+                                    <option value="C">Cartão de Crédito</option>
+                                    <option value="B">Cartão de Débito</option>
                                     <option value="P">PIX</option>
-                                    <option value="H">Cheque</option>
                                 </select>
                             </div>
 
-                            <!-- Botoes de Acao -->
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-success btn-lg" onclick="finalizarVenda()" id="btn-finalizar" disabled>
-                                    <i class="bi bi-check-circle"></i> Finalizar Venda (F12)
+                            <!-- Botão Finalizar -->
+                            <div class="d-grid">
+                                <button class="btn btn-success btn-lg" disabled>
+                                    <i class="bi bi-check-circle"></i> Finalizar Venda
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal de Edicao de Item -->
-    <div class="modal fade" id="editarItemModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Item</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Produto</label>
-                        <input type="text" class="form-control" id="modal-produto-nome" readonly>
+                <!-- Informações -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6><i class="bi bi-info-circle"></i> Informações</h6>
+                        <small class="text-muted">
+                            • Total de produtos: {{ produtos.count }}<br>
+                            • Total de clientes: {{ clientes.count }}<br>
+                            • Sistema funcionando ✅
+                        </small>
                     </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <label class="form-label">Quantidade</label>
-                            <input type="number" class="form-control" id="modal-quantidade" step="0.01" min="0.01">
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label">Preco Unitario</label>
-                            <input type="number" class="form-control" id="modal-preco" step="0.01" min="0.01">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="salvarEdicaoItem()">Salvar</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let carrinho = [];
-        let itemEditando = null;
-
-        function adicionarProduto(id, nome, preco, estoque) {
-            let itemExistente = carrinho.find(item => item.produto_id === id);
-            
-            if (itemExistente) {
-                if (itemExistente.quantidade < estoque) {
-                    itemExistente.quantidade += 1;
-                } else {
-                    alert('Estoque insuficiente!');
-                    return;
-                }
-            } else {
-                carrinho.push({
-                    produto_id: id,
-                    nome: nome,
-                    quantidade: 1,
-                    preco_unitario: preco,
-                    estoque: estoque
-                });
-            }
-            
-            atualizarCarrinho();
-        }
-
-        function removerItem(index) {
-            carrinho.splice(index, 1);
-            atualizarCarrinho();
-        }
-
-        function editarItem(index) {
-            itemEditando = index;
-            let item = carrinho[index];
-            
-            document.getElementById('modal-produto-nome').value = item.nome;
-            document.getElementById('modal-quantidade').value = item.quantidade;
-            document.getElementById('modal-preco').value = item.preco_unitario;
-            
-            new bootstrap.Modal(document.getElementById('editarItemModal')).show();
-        }
-
-        function salvarEdicaoItem() {
-            if (itemEditando !== null) {
-                let item = carrinho[itemEditando];
-                let novaQuantidade = parseFloat(document.getElementById('modal-quantidade').value);
-                let novoPreco = parseFloat(document.getElementById('modal-preco').value);
-                
-                if (novaQuantidade > item.estoque) {
-                    alert('Quantidade maior que o estoque disponÃ­vel!');
-                    return;
-                }
-                
-                item.quantidade = novaQuantidade;
-                item.preco_unitario = novoPreco;
-                
-                atualizarCarrinho();
-                bootstrap.Modal.getInstance(document.getElementById('editarItemModal')).hide();
-                itemEditando = null;
-            }
-        }
-
-        function atualizarCarrinho() {
-            let container = document.getElementById('carrinho-itens');
-            let subtotal = 0;
-            
-            if (carrinho.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-cart-x display-4"></i>
-                        <p>Carrinho vazio</p>
-                    </div>
-                `;
-                document.getElementById('btn-finalizar').disabled = true;
-            } else {
-                let html = '';
-                carrinho.forEach((item, index) => {
-                    let itemTotal = item.quantidade * item.preco_unitario;
-                    subtotal += itemTotal;
-                    
-                    html += `
-                        <div class="carrinho-item">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">${item.nome}</h6>
-                                    <small class="text-muted">
-                                        ${item.quantidade} x R$ ${item.preco_unitario.toFixed(2)}
-                                    </small>
-                                </div>
-                                <div class="text-end">
-                                    <div class="fw-bold">R$ ${itemTotal.toFixed(2)}</div>
-                                    <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-primary" onclick="editarItem(${index})">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-outline-danger" onclick="removerItem(${index})">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-                document.getElementById('btn-finalizar').disabled = false;
-            }
-            
-            let desconto = parseFloat(document.getElementById('desconto').value) || 0;
-            let total = subtotal - desconto;
-            
-            document.getElementById('subtotal').textContent = 'R$ ' + subtotal.toFixed(2);
-            document.getElementById('total').textContent = 'R$ ' + total.toFixed(2);
-        }
-
-        function limparCarrinho() {
-            if (carrinho.length > 0 && confirm('Deseja realmente limpar o carrinho?')) {
-                carrinho = [];
-                atualizarCarrinho();
-            }
-        }
-
-        function finalizarVenda() {
-            if (carrinho.length === 0) {
-                alert('Adicione pelo menos um item ao carrinho!');
-                return;
-            }
-            
-            let form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{% url "vendas:nova" %}';
-            
-            // CSRF Token
-            let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-            if (csrfToken) {
-                let csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrfmiddlewaretoken';
-                csrfInput.value = csrfToken.value;
-                form.appendChild(csrfInput);
-            }
-            
-            // Dados da venda
-            let campos = [
-                {name: 'cliente_id', value: document.getElementById('cliente-select').value},
-                {name: 'forma_pagamento', value: document.getElementById('forma-pagamento').value},
-                {name: 'desconto', value: document.getElementById('desconto').value}
-            ];
-            
-            campos.forEach(campo => {
-                let input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = campo.name;
-                input.value = campo.value || '';
-                form.appendChild(input);
-            });
-            
-            // Itens do carrinho
-            let itensInput = document.createElement('input');
-            itensInput.type = 'hidden';
-            itensInput.name = 'itens';
-            itensInput.value = JSON.stringify(carrinho);
-            form.appendChild(itensInput);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        function recarregarProdutos() {
-            location.reload();
-        }
-
-        // Busca de produtos
-        document.getElementById('busca-produto').addEventListener('input', function() {
-            let termo = this.value.toLowerCase();
-            let produtos = document.querySelectorAll('.produto-card');
-            
-            produtos.forEach(produto => {
-                let texto = produto.textContent.toLowerCase();
-                if (texto.includes(termo)) {
-                    produto.style.display = 'block';
-                } else {
-                    produto.style.display = 'none';
-                }
-            });
-        });
-
-        // Atualizar totais quando desconto mudar
-        document.getElementById('desconto').addEventListener('input', atualizarCarrinho);
-
-        // Atalhos de teclado
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F2') {
-                e.preventDefault();
-                document.getElementById('busca-produto').focus();
-            }
-            if (e.key === 'F12') {
-                e.preventDefault();
-                if (!document.getElementById('btn-finalizar').disabled) {
-                    finalizarVenda();
-                }
-            }
-        });
-
-        // Adicionar CSRF token automaticamente
-        window.addEventListener('DOMContentLoaded', function() {
-            fetch('/admin/')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const csrfToken = doc.querySelector('[name=csrfmiddlewaretoken]');
-                    if (csrfToken) {
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'csrfmiddlewaretoken';
-                        hiddenInput.value = csrfToken.value;
-                        document.body.appendChild(hiddenInput);
-                    }
-                });
-        });
-    </script>
 </body>
 </html>

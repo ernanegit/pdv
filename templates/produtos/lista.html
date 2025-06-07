@@ -6,106 +6,562 @@
     <title>Produtos - Sistema PDV</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: #0d6efd !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand, .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 2rem;
+            padding: 2rem;
+        }
+        
+        .header-section {
+            background: #0d6efd;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 2rem;
+            border: 1px solid #e9ecef;
+        }
+        
+        .search-input {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .search-input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+            background: white;
+        }
+        
+        .btn-modern {
+            background: #0d6efd;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-modern:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+            color: white;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #0d6efd;
+        }
+        
+        .product-image {
+            height: 200px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+        
+        .product-image .placeholder-icon {
+            font-size: 4rem;
+            color: #94a3b8;
+            opacity: 0.7;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-ok {
+            background: #198754;
+            color: white;
+        }
+        
+        .status-low {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .product-code {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .product-category {
+            background: #0d6efd;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        
+        .price-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        
+        .price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #198754;
+        }
+        
+        .stock-info {
+            text-align: right;
+        }
+        
+        .stock-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stock-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0 1.5rem 1.5rem;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .btn-edit {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+            color: white;
+        }
+        
+        .btn-view {
+            background: transparent;
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-view:hover {
+            background: #0d6efd;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .empty-icon {
+            font-size: 5rem;
+            color: #e2e8f0;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d6efd;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            .header-section {
+                padding: 1.5rem;
+            }
+            
+            .search-container {
+                padding: 1rem;
+            }
+            
+            .navbar-nav {
+                flex-direction: row !important;
+                gap: 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 1rem !important;
+                border-radius: 6px;
+            }
+        }
+        
+        /* Correção para os cards vazios */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9ecef;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Ajuste das estatísticas para mostrar valores corretos */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/relatorios/">
+            <a class="navbar-brand fw-bold" href="/">
                 <i class="bi bi-shop"></i> Sistema PDV
             </a>
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/vendas/pdv/">PDV</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/produtos/">Produtos</a></li>
-                <li class="nav-item"><a class="nav-link" href="/clientes/">Clientes</a></li>
-                <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
-            </ul>
+            <div class="navbar-nav ms-auto d-flex flex-row gap-3">
+                <a class="nav-link" href="/vendas/pdv/"><i class="bi bi-cash-coin"></i> PDV</a>
+                <a class="nav-link active" href="/produtos/"><i class="bi bi-box"></i> Produtos</a>
+                <a class="nav-link" href="/clientes/"><i class="bi bi-people"></i> Clientes</a>
+                <a class="nav-link" href="/admin/"><i class="bi bi-gear"></i> Admin</a>
+            </div>
         </div>
     </nav>
-    
-    <div class="container-fluid py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="bi bi-box"></i> Produtos ({{ produtos.count }})</h2>
-            <a href="/admin/produtos/produto/add/" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Novo Produto
-            </a>
-        </div>
 
-        <!-- Busca -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form method="get" class="row g-3">
-                    <div class="col-md-8">
-                        <input type="text" name="search" class="form-control" 
-                               placeholder="Buscar por nome, código..." value="{{ search }}">
-                    </div>
-                    <div class="col-md-2">
-                        <select name="categoria" class="form-select">
-                            <option value="">Todas as categorias</option>
-                            {% for categoria in categorias %}
-                            <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-search"></i> Buscar
-                        </button>
-                    </div>
-                </form>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2"><i class="bi bi-box-seam"></i> Gestão de Produtos</h1>
+                    <p class="mb-0 opacity-90">Gerencie seu catálogo de produtos de forma inteligente</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/admin/produtos/produto/add/" class="btn btn-light btn-lg">
+                        <i class="bi bi-plus-circle"></i> Novo Produto
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Lista de Produtos -->
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">{{ produtos.count }}</div>
+                <div class="stat-label">Total de Produtos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ categorias.count }}</div>
+                <div class="stat-label">Categorias</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% with produtos|length as total %}
+                        {% with produtos|dictsort:"estoque_atual"|slice:":5"|length as baixo %}
+                            {{ baixo }}
+                        {% endwith %}
+                    {% endwith %}
+                </div>
+                <div class="stat-label">Estoque Baixo</div>
+            </div>
+        </div>
+
+        <!-- Search Container -->
+        <div class="search-container">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Buscar Produtos</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control search-input border-start-0" 
+                               placeholder="Digite o nome ou código do produto..." value="{{ search }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Categoria</label>
+                    <select name="categoria" class="form-select search-input">
+                        <option value="">Todas as categorias</option>
+                        {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"s" == categoria_selecionada %}selected{% endif %}>
+                            {{ categoria.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="apenas_baixo" id="apenas_baixo">
+                        <label class="form-check-label fw-semibold" for="apenas_baixo">
+                            Apenas estoque baixo
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-modern w-100">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Grid -->
         {% if produtos %}
-            <div class="row">
+            <div class="row g-4">
                 {% for produto in produtos %}
-                <div class="col-md-4 mb-3">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ produto.nome }}</h5>
-                            <p class="card-text">
-                                <strong>Código:</strong> {{ produto.codigo }}<br>
-                                <strong>Categoria:</strong> {{ produto.categoria.nome }}<br>
-                                <strong>Preço:</strong> R$ {{ produto.preco_venda }}<br>
-                                <strong>Estoque:</strong> 
-                                <span class="badge {% if produto.estoque_baixo %}bg-warning{% else %}bg-success{% endif %}">
-                                    {{ produto.estoque_atual }} {{ produto.unidade_medida }}
-                                </span>
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <div class="btn-group w-100">
-                                <a href="/admin/produtos/produto/{{ produto.id }}/change/" 
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
-                                <a href="{{ produto.id }}/" class="btn btn-outline-info btn-sm">
-                                    <i class="bi bi-eye"></i> Detalhes
-                                </a>
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if produto.imagem %}
+                                <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                            {% else %}
+                                <i class="bi bi-box placeholder-icon"></i>
+                            {% endif %}
+                            
+                            <div class="status-badge {% if produto.estoque_baixo %}status-low{% else %}status-ok{% endif %}">
+                                {% if produto.estoque_baixo %}
+                                    <i class="bi bi-exclamation-triangle"></i> Baixo
+                                {% else %}
+                                    <i class="bi bi-check-circle"></i> OK
+                                {% endif %}
                             </div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <h3 class="product-title">{{ produto.nome }}</h3>
+                            <div class="mb-2">
+                                <span class="product-code">{{ produto.codigo }}</span>
+                                <span class="product-category">{{ produto.categoria.nome }}</span>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div>
+                                    <div class="price">R$ {{ produto.preco_venda }}</div>
+                                </div>
+                                <div class="stock-info">
+                                    <div class="stock-label">Estoque</div>
+                                    <div class="stock-value {% if produto.estoque_baixo %}text-warning{% else %}text-success{% endif %}">
+                                        {{ produto.estoque_atual }} {{ produto.unidade_medida }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-action btn-edit">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a href="{{ produto.id }}/" class="btn btn-action btn-view">
+                                <i class="bi bi-eye"></i> Detalhes
+                            </a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="card">
-                <div class="card-body text-center py-5">
-                    <i class="bi bi-box-seam display-4 text-muted"></i>
-                    <h5 class="mt-3 text-muted">Nenhum produto encontrado</h5>
-                    <p class="text-muted">
-                        {% if search %}
-                            Tente alterar os termos de busca
-                        {% else %}
-                            Comece cadastrando seu primeiro produto
-                        {% endif %}
-                    </p>
-                    <a href="/admin/produtos/produto/add/" class="btn btn-primary">
-                        <i class="bi bi-plus-circle"></i> Cadastrar Produto
-                    </a>
-                </div>
+            <div class="empty-state">
+                <i class="bi bi-box-seam empty-icon"></i>
+                <h3 class="text-muted mb-3">Nenhum produto encontrado</h3>
+                <p class="text-muted mb-4">
+                    {% if search %}
+                        Não encontramos produtos com os termos "{{ search }}". Tente refinar sua busca.
+                    {% else %}
+                        Comece seu negócio adicionando seus primeiros produtos ao catálogo.
+                    {% endif %}
+                </p>
+                <a href="/admin/produtos/produto/add/" class="btn btn-modern btn-lg">
+                    <i class="bi bi-plus-circle"></i> Adicionar Primeiro Produto
+                </a>
             </div>
         {% endif %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animação suave para cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Auto-submit do formulário quando mudar categoria
+        document.querySelector('select[name="categoria"]').addEventListener('change', function() {
+            this.form.submit();
+        });
+
+        // Auto-submit quando marcar/desmarcar checkbox
+        document.getElementById('apenas_baixo').addEventListener('change', function() {
+            this.form.submit();
+        });
+    </script>
 </body>
 </html>

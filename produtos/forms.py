@@ -1,4 +1,5 @@
-﻿from django import forms
+﻿# produtos/forms.py
+from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import Produto, Categoria
 
@@ -6,12 +7,17 @@ class ProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
         fields = [
-            'codigo', 'nome', 'descricao', 'categoria',
+            'codigo', 'nome', 'descricao', 'categoria', 'imagem',
             'preco_custo', 'preco_venda', 'estoque_atual', 'estoque_minimo',
             'unidade_medida', 'codigo_barras', 'ativo'
         ]
         widgets = {
             'descricao': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'imagem': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*',
+                'help_text': 'Formatos aceitos: JPG, PNG, WEBP (Max: 2MB)'
+            }),
             'preco_custo': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'preco_venda': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
             'estoque_atual': forms.NumberInput(attrs={'class': 'form-control'}),

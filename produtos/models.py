@@ -1,10 +1,14 @@
-﻿from django.db import models
+﻿# 1. Primeiro, instalar o Pillow (necessário para campos de imagem)
+# Execute no terminal: pip install Pillow
+
+# 2. Atualizar o modelo Produto em produtos/models.py
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 
 class Categoria(models.Model):
     nome = models.CharField(_('Nome'), max_length=100, unique=True)
-    descricao = models.TextField(_('DescriÃ§Ã£o'), blank=True)
+    descricao = models.TextField(_('Descrição'), blank=True)
     ativo = models.BooleanField(_('Ativo'), default=True)
     criado_em = models.DateTimeField(_('Criado em'), auto_now_add=True)
     
@@ -17,16 +21,26 @@ class Categoria(models.Model):
         return self.nome
 
 class Produto(models.Model):
-    codigo = models.CharField(_('CÃ³digo'), max_length=50, unique=True)
+    codigo = models.CharField(_('Código'), max_length=50, unique=True)
     nome = models.CharField(_('Nome'), max_length=200)
-    descricao = models.TextField(_('DescriÃ§Ã£o'), blank=True)
+    descricao = models.TextField(_('Descrição'), blank=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, verbose_name=_('Categoria'))
-    preco_custo = models.DecimalField(_('PreÃ§o de Custo'), max_digits=10, decimal_places=2, default=0)
-    preco_venda = models.DecimalField(_('PreÃ§o de Venda'), max_digits=10, decimal_places=2)
+    
+    # NOVO CAMPO DE IMAGEM
+    imagem = models.ImageField(
+        _('Imagem'), 
+        upload_to='produtos/', 
+        blank=True, 
+        null=True,
+        help_text='Imagem do produto (JPG, PNG - Max: 2MB)'
+    )
+    
+    preco_custo = models.DecimalField(_('Preço de Custo'), max_digits=10, decimal_places=2, default=0)
+    preco_venda = models.DecimalField(_('Preço de Venda'), max_digits=10, decimal_places=2)
     estoque_atual = models.IntegerField(_('Estoque Atual'), default=0)
-    estoque_minimo = models.IntegerField(_('Estoque MÃ­nimo'), default=0)
+    estoque_minimo = models.IntegerField(_('Estoque Mínimo'), default=0)
     unidade_medida = models.CharField(_('Unidade de Medida'), max_length=10, default='UN')
-    codigo_barras = models.CharField(_('CÃ³digo de Barras'), max_length=50, blank=True)
+    codigo_barras = models.CharField(_('Código de Barras'), max_length=50, blank=True)
     ativo = models.BooleanField(_('Ativo'), default=True)
     criado_em = models.DateTimeField(_('Criado em'), auto_now_add=True)
     atualizado_em = models.DateTimeField(_('Atualizado em'), auto_now=True)
@@ -48,3 +62,10 @@ class Produto(models.Model):
     @property
     def estoque_baixo(self):
         return self.estoque_atual <= self.estoque_minimo
+    
+    @property
+    def imagem_url(self):
+        """Retorna a URL da imagem ou uma imagem padrão"""
+        if self.imagem and hasattr(self.imagem, 'url'):
+            return self.imagem.url
+        return '/static/img/produto-default.png'

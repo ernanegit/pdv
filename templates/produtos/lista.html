@@ -346,30 +346,6 @@
                 border-radius: 6px;
             }
         }
-        
-        /* Correção para os cards vazios */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e9ecef;
-        }
-        
-        .empty-icon {
-            font-size: 4rem;
-            color: #dee2e6;
-            margin-bottom: 1.5rem;
-        }
-        
-        /* Ajuste das estatísticas para mostrar valores corretos */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
     </style>
 </head>
 <body>
@@ -396,7 +372,7 @@
                     <p class="mb-0 opacity-90">Gerencie seu catálogo de produtos de forma inteligente</p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="/admin/produtos/produto/add/" class="btn btn-light btn-lg">
+                    <a href="{% url 'produtos:criar' %}" class="btn btn-light btn-lg">
                         <i class="bi bi-plus-circle"></i> Novo Produto
                     </a>
                 </div>
@@ -508,10 +484,10 @@
                         </div>
                         
                         <div class="action-buttons">
-                            <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-action btn-edit">
+                            <a href="{% url 'produtos:editar' produto.id %}" class="btn btn-action btn-edit">
                                 <i class="bi bi-pencil"></i> Editar
                             </a>
-                            <a href="{{ produto.id }}/" class="btn btn-action btn-view">
+                            <a href="{% url 'produtos:detalhe' produto.id %}" class="btn btn-action btn-view">
                                 <i class="bi bi-eye"></i> Detalhes
                             </a>
                         </div>
@@ -530,7 +506,7 @@
                         Comece seu negócio adicionando seus primeiros produtos ao catálogo.
                     {% endif %}
                 </p>
-                <a href="/admin/produtos/produto/add/" class="btn btn-modern btn-lg">
+                <a href="{% url 'produtos:criar' %}" class="btn btn-modern btn-lg">
                     <i class="bi bi-plus-circle"></i> Adicionar Primeiro Produto
                 </a>
             </div>

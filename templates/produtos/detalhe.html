@@ -114,10 +114,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="bi bi-box"></i> {{ produto.nome }}</h2>
             <div class="btn-group">
-                <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-primary">
+                <a href="{% url 'produtos:editar' produto.id %}" class="btn btn-primary">
                     <i class="bi bi-pencil"></i> Editar
                 </a>
-                <a href="/produtos/" class="btn btn-secondary">
+                <a href="{% url 'produtos:lista' %}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -276,7 +276,7 @@
                             <a href="/vendas/pdv/" class="btn btn-success">
                                 <i class="bi bi-cash-coin"></i> Vender Produto
                             </a>
-                            <a href="/admin/produtos/produto/{{ produto.id }}/change/" class="btn btn-primary">
+                            <a href="{% url 'produtos:editar' produto.id %}" class="btn btn-primary">
                                 <i class="bi bi-pencil"></i> Editar Produto
                             </a>
                             <button class="btn btn-outline-secondary" onclick="window.print()">

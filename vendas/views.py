@@ -1,13 +1,16 @@
-﻿from django.shortcuts import render, get_object_or_404, redirect
+﻿# vendas/views.py - Versão atualizada com integração real do PDV
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.db.models import Q, Sum
 from django.db import transaction
-from .models import Venda, ItemVenda
-from produtos.models import Produto
-from clientes.models import Cliente
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 import json
+from .models import Venda, ItemVenda
+from produtos.models import Produto, Categoria
+from clientes.models import Cliente
 
 @login_required
 def lista_vendas(request):
@@ -33,51 +36,71 @@ def detalhe_venda(request, pk):
 
 @login_required
 def pdv_view(request):
-    produtos = Produto.objects.filter(ativo=True, estoque_atual__gt=0)
+    produtos = Produto.objects.filter(ativo=True)
+    categorias = Categoria.objects.filter(ativo=True)
     clientes = Cliente.objects.filter(ativo=True)
     
     context = {
         'produtos': produtos,
+        'categorias': categorias,
         'clientes': clientes,
     }
     return render(request, 'vendas/pdv.html', context)
 
 @login_required
+@require_POST
 def nova_venda(request):
-    if request.method == 'POST':
-        try:
-            with transaction.atomic():
-                cliente_id = request.POST.get('cliente_id')
-                forma_pagamento = request.POST.get('forma_pagamento', 'D')
-                desconto = float(request.POST.get('desconto', 0))
-                observacoes = request.POST.get('observacoes', '')
-                
-                itens_json = request.POST.get('itens')
-                itens = json.loads(itens_json) if itens_json else []
-                
-                if not itens:
-                    messages.error(request, 'Adicione pelo menos um item Ã  venda.')
-                    return redirect('vendas:pdv')
-                
-                venda = Venda.objects.create(
-                    cliente_id=cliente_id if cliente_id else None,
-                    vendedor=request.user,
-                    forma_pagamento=forma_pagamento,
-                    desconto=desconto,
-                    observacoes=observacoes,
-                    status='C'
-                )
-                
-                subtotal = 0
-                for item in itens:
-                    produto = Produto.objects.get(pk=item['produto_id'])
-                    quantidade = float(item['quantidade'])
-                    preco_unitario = float(item['preco_unitario'])
+    try:
+        # Parse do JSON ou form data
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            data = {
+                'cliente_id': request.POST.get('cliente_id'),
+                'forma_pagamento': request.POST.get('forma_pagamento', 'D'),
+                'desconto': float(request.POST.get('desconto', 0)),
+                'observacoes': request.POST.get('observacoes', ''),
+                'itens': json.loads(request.POST.get('itens', '[]'))
+            }
+        
+        with transaction.atomic():
+            cliente_id = data.get('cliente_id')
+            forma_pagamento = data.get('forma_pagamento', 'D')
+            desconto = float(data.get('desconto', 0))
+            observacoes = data.get('observacoes', '')
+            itens = data.get('itens', [])
+            
+            if not itens:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Adicione pelo menos um item à venda.'
+                })
+            
+            # Criar a venda
+            venda = Venda.objects.create(
+                cliente_id=cliente_id if cliente_id else None,
+                vendedor=request.user,
+                forma_pagamento=forma_pagamento,
+                desconto=desconto,
+                observacoes=observacoes,
+                status='C'
+            )
+            
+            subtotal = 0
+            
+            # Processar cada item
+            for item_data in itens:
+                try:
+                    produto = Produto.objects.get(pk=item_data['produto_id'])
+                    quantidade = int(item_data['quantidade'])
+                    preco_unitario = float(item_data['preco_unitario'])
                     
+                    # Verificar estoque
                     if produto.estoque_atual < quantidade:
-                        raise ValueError(f'Estoque insuficiente para {produto.nome}')
+                        raise ValueError(f'Estoque insuficiente para {produto.nome}. Disponível: {produto.estoque_atual}')
                     
-                    ItemVenda.objects.create(
+                    # Criar item da venda
+                    item_venda = ItemVenda.objects.create(
                         venda=venda,
                         produto=produto,
                         quantidade=quantidade,
@@ -85,23 +108,34 @@ def nova_venda(request):
                         subtotal=quantidade * preco_unitario
                     )
                     
-                    produto.estoque_atual -= int(quantidade)
+                    # Atualizar estoque
+                    produto.estoque_atual -= quantidade
                     produto.save()
                     
-                    subtotal += quantidade * preco_unitario
+                    subtotal += item_venda.subtotal
+                    
+                except Produto.DoesNotExist:
+                    raise ValueError(f'Produto com ID {item_data["produto_id"]} não encontrado')
+                except (ValueError, KeyError) as e:
+                    raise ValueError(f'Dados inválidos para item: {str(e)}')
+            
+            # Atualizar totais da venda
+            venda.subtotal = subtotal
+            venda.total = subtotal - desconto
+            venda.save()
+            
+            return JsonResponse({
+                'success': True,
+                'numero_venda': venda.numero_venda,
+                'total': float(venda.total),
+                'message': f'Venda {venda.numero_venda} realizada com sucesso!'
+            })
                 
-                venda.subtotal = subtotal
-                venda.total = subtotal - desconto
-                venda.save()
-                
-                messages.success(request, f'Venda {venda.numero_venda} realizada com sucesso!')
-                return redirect('vendas:detalhe', pk=venda.pk)
-                
-        except Exception as e:
-            messages.error(request, f'Erro ao processar venda: {str(e)}')
-            return redirect('vendas:pdv')
-    
-    return redirect('vendas:pdv')
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
 
 @login_required
 def buscar_produto_ajax(request):
@@ -123,3 +157,20 @@ def buscar_produto_ajax(request):
         })
     
     return JsonResponse(results, safe=False)
+
+@login_required
+def obter_estoque_produto(request, produto_id):
+    """View para obter o estoque atual de um produto"""
+    try:
+        produto = Produto.objects.get(pk=produto_id, ativo=True)
+        return JsonResponse({
+            'success': True,
+            'estoque_atual': produto.estoque_atual,
+            'estoque_minimo': produto.estoque_minimo,
+            'estoque_baixo': produto.estoque_baixo
+        })
+    except Produto.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Produto não encontrado'
+        })

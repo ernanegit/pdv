@@ -1,4 +1,5 @@
-﻿from django.urls import path
+﻿# vendas/urls.py - URLs atualizadas
+from django.urls import path
 from . import views
 
 app_name = 'vendas'
@@ -9,4 +10,5 @@ urlpatterns = [
     path('pdv/', views.pdv_view, name='pdv'),
     path('<int:pk>/', views.detalhe_venda, name='detalhe'),
     path('ajax/buscar-produto/', views.buscar_produto_ajax, name='buscar_produto_ajax'),
+    path('ajax/estoque/<int:produto_id>/', views.obter_estoque_produto, name='obter_estoque'),
 ]
